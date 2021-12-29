@@ -10,8 +10,9 @@ const books = require("./books.json");
  ****************************************************************/
 function getBookById(bookId, books) {
   // Your code goes here
+  return books.find ((book) => book.id === (bookId))
 }
-// console.log(getBookById(12, books));
+//console.log(getBookById(12, books));
 
 /**************************************************************
  * getAuthorByName(authorName, authors):
@@ -22,8 +23,9 @@ function getBookById(bookId, books) {
  ****************************************************************/
 function getAuthorByName(authorName, authors) {
   // Your code goes here
+return authors.find((auther) => auther.name.toLowerCase() === authorName.toLowerCase())
 }
-// console.log(getAuthorByName("J.K. Rowling", authors));
+//console.log(getAuthorByName("J.K. Rowling", authors));
 
 /**************************************************************
  * bookCountsByAuthor(authors):
@@ -33,8 +35,18 @@ function getAuthorByName(authorName, authors) {
  ****************************************************************/
 function bookCountsByAuthor(authors) {
   // Your code goes here
+  // return authors.filter(author => author.books.length)
+
+  // return authors.map(author => (author.name && author.books.length))
+ return authors.map (author => ({ 
+   author: author.name, 
+   bookCount: author.books.length }))
+
 }
-// console.log(bookCountsByAuthor(authors));
+//console.log(bookCountsByAuthor(authors));
+
+// RETURNS ALL AUTHORS IN ARRAY
+// return authors.map ((author) => author.name,), 
 
 /**************************************************************
  * booksByColor(books):
@@ -47,10 +59,14 @@ function booksByColor(books) {
   const colors = {};
 
   // Your code goes here
-
+books.forEach(book => { if (colors[book.color])
+  colors[book.color].push(book.title);
+  else; colors[book.color] = [book.title]
+  
+});
   return colors;
 }
-// console.log(booksByColor(books));
+//console.log(booksByColor(books));
 
 /**************************************************************
  * titlesByAuthorName(authorName, authors, books):
@@ -62,6 +78,9 @@ function booksByColor(books) {
  ****************************************************************/
 function titlesByAuthorName(authorName, authors, books) {
   // Your code goes here
+  const author = getAuthorByName(authorName, authors);
+  if (!author) return [];
+  return author.books.map(bookId => getBookById(bookId, books).title);
 }
 // console.log(titlesByAuthorName("George R.R. Martin", authors, books));
 
@@ -74,6 +93,23 @@ function titlesByAuthorName(authorName, authors, books) {
  ****************************************************************/
 function mostProlificAuthor(authors) {
   // Your code goes here
+  // let prolificAuthor = authors[0];
+
+  // authors.forEach(author => {
+  //   if (author.books.length > prolificAuthor.books.length) {
+  //     prolificAuthor = author;
+  //   }
+  // });
+
+  // return prolificAuthor.name;
+
+                  //or
+
+  // return authors.sort(
+  //   (authorA, authorB) => authorA.books.length - authorB.books.length)[0].name;
+
+                          //or
+ return authors.reduce((a, b) => (a.books.length > b.books.length ? a : b)).name;                  
 }
 // console.log(mostProlificAuthor(authors));
 
@@ -102,6 +138,7 @@ function mostProlificAuthor(authors) {
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
   // Your code goes here
+
 }
 // console.log(relatedBooks(50, authors, books));
 
@@ -113,6 +150,16 @@ function relatedBooks(bookId, authors, books) {
  ****************************************************************/
 function friendliestAuthor(authors) {
   // Your code goes here
+  return getBookById(bookId, books).authors.reduce(
+      (titles, author) => [
+        ...new Set([
+          ...titles,
+          ...titlesByAuthorName(author.name, authors, books)
+        ])
+        ...new Set(titles.concat(titlesByAuthorName(author.name, authors, books)))
+      ],
+      []
+    );
 }
 // console.log(friendliestAuthor(authors));
 
